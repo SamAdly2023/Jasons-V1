@@ -1,0 +1,53 @@
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  isAdmin: boolean;
+}
+
+export interface Design {
+  id: string;
+  imageUrl: string;
+  name: string;
+  author: string;
+  isAI?: boolean;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  baseImageUrl: string;
+  category: 'tshirt' | 'hoodie';
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  designId?: string;
+  customDesignUrl?: string;
+  quantity: number;
+  size: 'S' | 'M' | 'L' | 'XL' | 'XXL';
+  color: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  items: CartItem[];
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  createdAt: string;
+}
+
+export enum AppRoute {
+  HOME = '/',
+  GALLERY = '/gallery',
+  CREATE = '/create',
+  CHECKOUT = '/checkout',
+  ADMIN = '/admin',
+  PROFILE = '/profile'
+}
