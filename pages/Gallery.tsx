@@ -1,17 +1,22 @@
 
-import React, { useEffect } from 'react';
-import { GALLERY_DESIGNS } from '../constants';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppRoute } from '../types';
+import { AppRoute, Design } from '../types';
 import { useApp } from '../App';
+import { api } from '../services/api';
 
 const Gallery: React.FC = () => {
   const { user } = useApp();
   const navigate = useNavigate();
+  const [designs, setDesigns] = useState<Design[]>([]);
 
   useEffect(() => {
     if (!user) {
         navigate(AppRoute.HOME);
+    } else {
+        api.getDesigns()
+           .then(data => setDesigns(data))
+           .catch(error => console.error("Failed to fetch designs", error));
     }
   }, [user, navigate]);
 
@@ -33,7 +38,7 @@ const Gallery: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {GALLERY_DESIGNS.map((design) => (
+          {designs.map((design) => (
             <div key={design.id} className="group relative">
                <div className="aspect-square rounded-[2rem] overflow-hidden bg-gray-50 mb-4 shadow-sm group-hover:shadow-xl transition-all duration-500">
                  <img 

@@ -213,6 +213,30 @@ app.get('/api/orders/:userId', async (req, res) => {
   }
 });
 
+// GET /api/designs
+app.get('/api/designs', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM designs ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/designs
+app.post('/api/designs', async (req, res) => {
+  const { name, author, image_url, is_ai } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO designs (name, author, image_url, is_ai) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, author, image_url, is_ai]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../dist')));
 

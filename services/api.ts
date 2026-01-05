@@ -10,6 +10,41 @@ export const api = {
     return res.json();
   },
 
+  async getDesigns(): Promise<Design[]> {
+    const res = await fetch(`${API_URL}/designs`);
+    if (!res.ok) throw new Error('Failed to fetch designs');
+    const data = await res.json();
+    return data.map((d: any) => ({
+      id: d.id,
+      imageUrl: d.image_url,
+      name: d.name,
+      author: d.author,
+      isAI: d.is_ai
+    }));
+  },
+
+  async createDesign(design: Omit<Design, 'id'>): Promise<Design> {
+    const res = await fetch(`${API_URL}/designs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: design.name,
+        author: design.author,
+        image_url: design.imageUrl,
+        is_ai: design.isAI
+      }),
+    });
+    if (!res.ok) throw new Error('Failed to create design');
+    const d = await res.json();
+    return {
+      id: d.id,
+      imageUrl: d.image_url,
+      name: d.name,
+      author: d.author,
+      isAI: d.is_ai
+    };
+  },
+
   async syncUser(user: User): Promise<User> {
     const res = await fetch(`${API_URL}/users`, {
       method: 'POST',

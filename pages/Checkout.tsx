@@ -6,31 +6,33 @@ import { AppRoute } from '../types';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import StripeCheckoutForm from '../components/StripeCheckoutForm';
+import { api } from '../services/api';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Checkout: React.FC = () => {
-  const { cart, removeFromCart, clearCart } = useApp();
+  const { user, cart, removeFromCart, clearCart } = useApp();
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment' | 'success'>('cart');
   
   const subtotal = cart.reduce((acc, item) => acc + 29.99 * item.quantity, 0);
   const shipping = subtotal > 75 ? 0 : 5.99;
   const total = subtotal + shipping;
 
-  const handleProcessPayment = async () => {
-    // In a real app, this would be handled by StripeCheckoutForm
-    // But for the "demo simulation" requested:
-    
-    // 1. Create Order in DB
-    try {
-        // Assuming we have a user, if not we might need guest checkout logic or force login
-        // For now, let's assume user is logged in or we skip user_id
-        // We need to import api and user from context
-        
-        // Note: We are inside Checkout component, we can access user from useApp()
-        // But I need to update the component to destructure user.
-    } catch (e) {
-        console.error(e);
+  const handlePaymentSuccess = async () => {
+    // Create Order in DB
+    if (user) {
+        try {
+            await api.createOrder({
+                id: '', 
+                userId: user.id,
+                items: cart,
+                total: total,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            });
+        } catch (e) {
+            console.error("Failed to create order", e);
+        }
     }
 
     setStep('success');
@@ -170,31 +172,14 @@ const Checkout: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="p-8 border-2 border-black rounded-3xl space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Card Number</label>
-                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
-                      <i className="fa-solid fa-credit-card text-gray-400"></i>
-                      <input type="text" placeholder="XXXX XXXX XXXX XXXX" className="bg-transparent w-full outline-none font-mono" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Expiry Date</label>
-                      <input type="text" placeholder="MM/YY" className="w-full p-4 bg-gray-50 rounded-xl outline-none" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">CVV</label>
-                      <input type="text" placeholder="123" className="w-full p-4 bg-gray-50 rounded-xl outline-none" />
-                    </div>
-                  </div>
+                <div className="p-8 border-2 border-black rounded-3xl">
+                     <Elements stripe={stripePromise}>
+                        <StripeCheckoutForm onSuccess={handlePaymentSuccess} />
+                     </Elements>
                 </div>
 
                 <div className="flex space-x-4">
                   <button onClick={() => setStep('shipping')} className="flex-1 py-5 bg-gray-100 rounded-2xl font-bold">BACK</button>
-                  <button onClick={handleProcessPayment} className="flex-[2] py-5 bg-green-500 text-black rounded-2xl font-bold shadow-lg shadow-green-100">
-                    PAY ${total.toFixed(2)}
-                  </button>
                 </div>
               </div>
             )}

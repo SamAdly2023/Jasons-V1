@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DesignEditor from '../components/DesignEditor';
 import { geminiService } from '../services/gemini';
-import { supabase } from '../services/supabase';
+import { api } from '../services/api';
 import { useApp } from '../App';
 import { AppRoute } from '../types';
 
@@ -34,27 +34,25 @@ const Create: React.FC = () => {
       if (result) {
         setGeneratedImage(result);
         
-        // Auto-save to Gallery
-        const { data: newDesign, error } = await supabase
-          .from('designs')
-          .insert([
-            { 
-              image_url: result, 
+        let designId = undefined;
+        try {
+            // Auto-save to Gallery
+            const newDesign = await api.createDesign({
+              imageUrl: result,
               name: prompt,
               author: user?.name || 'Anonymous Creator',
-              is_ai: true
-            }
-          ])
-          .select()
-          .single();
-
-        if (error) console.error("Error saving to gallery:", error);
+              isAI: true
+            });
+            designId = newDesign.id;
+        } catch (error) {
+            console.error("Error saving to gallery:", error);
+        }
 
         // Auto-add to Cart
         addToCart({
           id: Math.random().toString(36).substr(2, 9),
           productId: 'prod_ai_custom', 
-          designId: newDesign?.id,
+          designId: designId,
           customDesignUrl: result,
           quantity: 1,
           size: 'L',
