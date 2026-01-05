@@ -1,6 +1,7 @@
 
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { User, CartItem, Product, Design, AppRoute } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -32,16 +33,28 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const login = () => {
-    // Simulating Google Login
-    setUser({
-      id: 'u1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      avatar: 'https://picsum.photos/seed/user/100',
-      isAdmin: true // For testing dashboard access
-    });
-  };
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        }).then(res => res.json());
+
+        setUser({
+          id: userInfo.sub,
+          name: userInfo.name,
+          email: userInfo.email,
+          avatar: userInfo.picture,
+          isAdmin: userInfo.email === 'admin@example.com' // Replace with actual admin check
+        });
+      } catch (error) {
+        console.error('Failed to fetch user info', error);
+      }
+    },
+    onError: errorResponse => console.log(errorResponse),
+  });
+
+  const login = () => googleLogin();
 
   const logout = () => setUser(null);
 
