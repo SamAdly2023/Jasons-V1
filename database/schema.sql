@@ -3,7 +3,7 @@
 create extension if not exists "uuid-ossp";
 
 -- USERS TABLE
-create table public.users (
+create table if not exists public.users (
   id text primary key, -- Google ID or Supabase Auth ID
   email text unique not null,
   name text,
@@ -13,7 +13,7 @@ create table public.users (
 );
 
 -- PRODUCTS TABLE
-create table public.products (
+create table if not exists public.products (
   id uuid default uuid_generate_v4() primary key,
   name text not null,
   description text,
@@ -24,7 +24,7 @@ create table public.products (
 );
 
 -- DESIGNS TABLE (Gallery designs)
-create table public.designs (
+create table if not exists public.designs (
   id uuid default uuid_generate_v4() primary key,
   name text not null,
   author text not null,
@@ -34,7 +34,7 @@ create table public.designs (
 );
 
 -- ORDERS TABLE
-create table public.orders (
+create table if not exists public.orders (
   id uuid default uuid_generate_v4() primary key,
   user_id text references public.users(id),
   total_amount decimal(10, 2) not null,
@@ -43,7 +43,7 @@ create table public.orders (
 );
 
 -- ORDER ITEMS TABLE
-create table public.order_items (
+create table if not exists public.order_items (
   id uuid default uuid_generate_v4() primary key,
   order_id uuid references public.orders(id) on delete cascade,
   product_id uuid references public.products(id),
