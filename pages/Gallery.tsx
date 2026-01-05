@@ -1,10 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GALLERY_DESIGNS } from '../constants';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppRoute } from '../types';
+import { useApp } from '../App';
 
 const Gallery: React.FC = () => {
+  const { user } = useApp();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+        navigate(AppRoute.HOME);
+    }
+  }, [user, navigate]);
+
+  if (!user) return null;
+
   return (
     <div className="bg-white min-h-screen py-16 px-4">
       <div className="max-w-7xl mx-auto">

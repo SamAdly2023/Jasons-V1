@@ -48,6 +48,12 @@ export enum AppRoute {
   GALLERY = '/gallery',
   CREATE = '/create',
   CHECKOUT = '/checkout',
+  DASHBOARD = '/dashboard',
+  ADMIN = '/admin'
+}
+  ADMIN = '/admin',
+  DASHBOARD = '/dashboard'
+}
   ADMIN = '/admin',
   PROFILE = '/profile'
 }

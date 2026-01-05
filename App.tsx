@@ -10,6 +10,8 @@ import Gallery from './pages/Gallery';
 import Create from './pages/Create';
 import Checkout from './pages/Checkout';
 import AdminDashboard from './pages/AdminDashboard';
+import ClientDashboard from './pages/ClientDashboard';
+import { api } from './services/api';
 
 interface AppContextType {
   user: User | null;
@@ -40,13 +42,27 @@ const App: React.FC = () => {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         }).then(res => res.json());
 
-        setUser({
+        const userData: User = {
           id: userInfo.sub,
           name: userInfo.name,
           email: userInfo.email,
           avatar: userInfo.picture,
-          isAdmin: userInfo.email === 'admin@example.com' // Replace with actual admin check
+          isAdmin: false // Default, will be updated by syncUser
+        };
+
+        // Sync with backend and get actual role
+        const syncedUser = await api.syncUser(userData);
+        
+        // Map backend response (snake_case from DB) to frontend model if needed
+        // But our API returns what we sent mostly, except is_admin might be is_admin in DB
+        // Let's assume the backend returns the user object.
+        // We need to handle the mapping if the DB returns snake_case.
+        
+        setUser({
+            ...userData,
+            isAdmin: (syncedUser as any).is_admin // DB returns is_admin
         });
+
       } catch (error) {
         console.error('Failed to fetch user info', error);
       }
@@ -79,6 +95,7 @@ const App: React.FC = () => {
               <Route path={AppRoute.GALLERY} element={<Gallery />} />
               <Route path={AppRoute.CREATE} element={<Create />} />
               <Route path={AppRoute.CHECKOUT} element={<Checkout />} />
+              <Route path={AppRoute.DASHBOARD} element={user ? <ClientDashboard /> : <Navigate to={AppRoute.HOME} />} />
               <Route path={AppRoute.ADMIN} element={user?.isAdmin ? <AdminDashboard /> : <Navigate to={AppRoute.HOME} />} />
               <Route path="*" element={<Navigate to={AppRoute.HOME} />} />
             </Routes>

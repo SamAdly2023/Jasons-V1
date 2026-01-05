@@ -1,25 +1,76 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DesignEditor from '../components/DesignEditor';
 import { geminiService } from '../services/gemini';
+import { supabase } from '../services/supabase';
+import { useApp } from '../App';
+import { AppRoute } from '../types';
 
 const Create: React.FC = () => {
+  const { user, addToCart, login } = useApp();
+  const navigate = useNavigate();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<'selection' | 'editor'>('selection');
 
+  useEffect(() => {
+    if (!user) {
+        // If accessed directly, redirect to home or trigger login
+        // Since we can't easily trigger login from here without user interaction context sometimes,
+        // we'll redirect to home where they can click the button to login.
+        navigate(AppRoute.HOME);
+    }
+  }, [user, navigate]);
+
+  if (!user) return null; // Or a loading spinner/message
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
-    const result = await geminiService.generateDesign(prompt);
-    if (result) {
-      setGeneratedImage(result);
-      setMode('editor');
-    } else {
-      alert("Something went wrong with AI generation. Please try again.");
+    try {
+      const result = await geminiService.generateDesign(prompt);
+      if (result) {
+        setGeneratedImage(result);
+        
+        // Auto-save to Gallery
+        const { data: newDesign, error } = await supabase
+          .from('designs')
+          .insert([
+            { 
+              image_url: result, 
+              name: prompt,
+              author: user?.name || 'Anonymous Creator',
+              is_ai: true
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) console.error("Error saving to gallery:", error);
+
+        // Auto-add to Cart
+        addToCart({
+          id: Math.random().toString(36).substr(2, 9),
+          productId: 'prod_ai_custom', 
+          designId: newDesign?.id,
+          customDesignUrl: result,
+          quantity: 1,
+          size: 'L',
+          color: 'White'
+        });
+
+        setMode('editor');
+      } else {
+        alert("Something went wrong with AI generation. Please try again.");
+      }
+    } catch (error) {
+      console.error("Generation error:", error);
+      alert("An error occurred while generating the design.");
+    } finally {
+      setIsGenerating(false);
     }
-    setIsGenerating(false);
   };
 
   if (mode === 'editor') {

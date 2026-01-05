@@ -15,6 +15,10 @@ const Navbar: React.FC = () => {
     { name: 'Create', path: AppRoute.CREATE },
   ];
 
+  if (user) {
+      navLinks.push({ name: 'Dashboard', path: AppRoute.DASHBOARD });
+  }
+
   if (user?.isAdmin) {
     navLinks.push({ name: 'Admin', path: AppRoute.ADMIN });
   }

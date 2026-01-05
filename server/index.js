@@ -2,9 +2,12 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import Database from 'better-sqlite3';
+import pg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,133 +20,192 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Database Setup
-const dbPath = path.join(__dirname, 'database.sqlite');
-const db = new Database(dbPath);
+const { Pool } = pg;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
-// Initialize Tables
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL,
-    name TEXT,
-    avatar_url TEXT,
-    is_admin INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-
-  CREATE TABLE IF NOT EXISTS products (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT,
-    price REAL NOT NULL,
-    base_image_url TEXT NOT NULL,
-    category TEXT CHECK(category IN ('tshirt', 'hoodie')),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-
-  CREATE TABLE IF NOT EXISTS orders (
-    id TEXT PRIMARY KEY,
-    user_id TEXT,
-    total_amount REAL NOT NULL,
-    status TEXT CHECK(status IN ('pending', 'processing', 'shipped', 'delivered')) DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS order_items (
-    id TEXT PRIMARY KEY,
-    order_id TEXT,
-    product_id TEXT,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    size TEXT NOT NULL,
-    color TEXT NOT NULL,
-    price_at_purchase REAL NOT NULL,
-    FOREIGN KEY(order_id) REFERENCES orders(id),
-    FOREIGN KEY(product_id) REFERENCES products(id)
-  );
-`);
-
-console.log('Database initialized at', dbPath);
+// Test Database Connection
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Error acquiring client', err.stack);
+  }
+  client.query('SELECT NOW()', (err, result) => {
+    release();
+    if (err) {
+      return console.error('Error executing query', err.stack);
+    }
+    console.log('Connected to Database at:', result.rows[0].now);
+  });
+});
 
 // Routes
 
 // GET /api/products
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
   try {
-    const products = db.prepare('SELECT * FROM products').all();
-    res.json(products);
+    const result = await pool.query('SELECT * FROM products');
+    res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // POST /api/products (Admin only - simplified)
-app.post('/api/products', (req, res) => {
+app.post('/api/products', async (req, res) => {
   const { id, name, description, price, base_image_url, category } = req.body;
   try {
-    const stmt = db.prepare('INSERT INTO products (id, name, description, price, base_image_url, category) VALUES (?, ?, ?, ?, ?, ?)');
-    stmt.run(id, name, description, price, base_image_url, category);
-    res.status(201).json({ message: 'Product created' });
+    // Note: id is optional if using UUID generation in DB, but we'll keep it if provided
+    // If id is provided, we use it. If not, we let the DB generate it (if configured).
+    // Based on schema.sql, id is uuid default uuid_generate_v4().
+    // But the frontend might be sending an ID.
+    
+    let query = 'INSERT INTO products (name, description, price, base_image_url, category) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+    let values = [name, description, price, base_image_url, category];
+
+    if (id) {
+        query = 'INSERT INTO products (id, name, description, price, base_image_url, category) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+        values = [id, name, description, price, base_image_url, category];
+    }
+
+    const result = await pool.query(query, values);
+    res.status(201).json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // POST /api/users (Login/Register)
-app.post('/api/users', (req, res) => {
+app.post('/api/users', async (req, res) => {
   const { id, email, name, avatar_url, is_admin } = req.body;
   try {
-    const existingUser = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
-    if (existingUser) {
+    const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    
+    // Auto-admin logic
+    const shouldBeAdmin = email === 'samadly728@gmail.com' || is_admin;
+
+    if (existingUser.rows.length > 0) {
       // Update existing user
-      const stmt = db.prepare('UPDATE users SET name = ?, avatar_url = ?, email = ? WHERE id = ?');
-      stmt.run(name, avatar_url, email, id);
+      await pool.query(
+        'UPDATE users SET name = $1, avatar_url = $2, email = $3, is_admin = $4 WHERE id = $5',
+        [name, avatar_url, email, shouldBeAdmin, id]
+      );
     } else {
       // Create new user
-      const stmt = db.prepare('INSERT INTO users (id, email, name, avatar_url, is_admin) VALUES (?, ?, ?, ?, ?)');
-      stmt.run(id, email, name, avatar_url, is_admin ? 1 : 0);
+      await pool.query(
+        'INSERT INTO users (id, email, name, avatar_url, is_admin) VALUES ($1, $2, $3, $4, $5)',
+        [id, email, name, avatar_url, shouldBeAdmin]
+      );
     }
-    res.json({ message: 'User synced' });
+    
+    // Return the user data so frontend has the correct role
+    const updatedUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    res.json(updatedUser.rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+// GET /api/admin/users
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM users ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET /api/admin/orders
+app.get('/api/admin/orders', async (req, res) => {
+    try {
+        const ordersResult = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+        const orders = ordersResult.rows;
+
+        for (const order of orders) {
+            const itemsResult = await pool.query('SELECT * FROM order_items WHERE order_id = $1', [order.id]);
+            order.items = itemsResult.rows;
+        }
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// POST /api/create-payment-intent
+app.post('/api/create-payment-intent', async (req, res) => {
+  const { amount } = req.body;
+  // Mock Stripe Payment Intent for Demo
+  // In a real app, you would use stripe.paymentIntents.create here
+  res.json({ clientSecret: 'pi_mock_secret_' + Math.random().toString(36).substr(2, 9) });
+});
+
 // POST /api/orders
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', async (req, res) => {
   const { id, user_id, total_amount, items } = req.body;
   
-  const insertOrder = db.transaction(() => {
-    db.prepare('INSERT INTO orders (id, user_id, total_amount) VALUES (?, ?, ?)').run(id, user_id, total_amount);
-    const insertItem = db.prepare('INSERT INTO order_items (id, order_id, product_id, quantity, size, color, price_at_purchase) VALUES (?, ?, ?, ?, ?, ?, ?)');
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
     
+    // Insert Order
+    // If id is provided use it, otherwise let DB generate (but we need the ID for items)
+    // Assuming frontend generates ID or we generate it here if not provided.
+    // schema.sql says id is uuid default.
+    
+    let orderId = id;
+    if (orderId) {
+        await client.query(
+            'INSERT INTO orders (id, user_id, total_amount) VALUES ($1, $2, $3)',
+            [orderId, user_id, total_amount]
+        );
+    } else {
+        const orderRes = await client.query(
+            'INSERT INTO orders (user_id, total_amount) VALUES ($1, $2) RETURNING id',
+            [user_id, total_amount]
+        );
+        orderId = orderRes.rows[0].id;
+    }
+
+    // Insert Order Items
     for (const item of items) {
-      insertItem.run(
-        Math.random().toString(36).substr(2, 9), // Generate ID for item
-        id,
-        item.productId,
-        item.quantity,
-        item.size,
-        item.color,
-        item.price
+      // Generate a random ID for the item if not provided, or let DB handle it if schema allows
+      // schema.sql says order_items id is uuid default uuid_generate_v4()
+      
+      await client.query(
+        'INSERT INTO order_items (order_id, product_id, quantity, size, color, price_at_purchase) VALUES ($1, $2, $3, $4, $5, $6)',
+        [
+            orderId,
+            item.productId,
+            item.quantity,
+            item.size,
+            item.color,
+            item.price
+        ]
       );
     }
-  });
 
-  try {
-    insertOrder();
-    res.status(201).json({ message: 'Order created' });
+    await client.query('COMMIT');
+    res.status(201).json({ message: 'Order created', orderId });
   } catch (error) {
+    await client.query('ROLLBACK');
     res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
   }
 });
 
 // GET /api/orders/:userId
-app.get('/api/orders/:userId', (req, res) => {
+app.get('/api/orders/:userId', async (req, res) => {
   try {
-    const orders = db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC').all(req.params.userId);
+    const ordersResult = await pool.query('SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC', [req.params.userId]);
+    const orders = ordersResult.rows;
+
     for (const order of orders) {
-      order.items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
+      const itemsResult = await pool.query('SELECT * FROM order_items WHERE order_id = $1', [order.id]);
+      order.items = itemsResult.rows;
     }
     res.json(orders);
   } catch (error) {

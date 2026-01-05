@@ -5,7 +5,8 @@ export class GeminiService {
   private ai: GoogleGenAI;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    // Try VITE_ prefixed env var first, then fallback to process.env (handled by vite define)
+    this.ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || process.env.API_KEY || '' });
   }
 
   async generateDesign(prompt: string): Promise<string | null> {

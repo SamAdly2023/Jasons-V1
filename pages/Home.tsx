@@ -1,9 +1,21 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppRoute } from '../types';
+import { useApp } from '../App';
 
 const Home: React.FC = () => {
+  const { user, login } = useApp();
+  const navigate = useNavigate();
+
+  const handleAuthAction = (route: string) => {
+    if (user) {
+      navigate(route);
+    } else {
+      login();
+    }
+  };
+
   return (
     <div className="flex flex-col overflow-hidden">
       {/* Hero Section */}
@@ -31,18 +43,18 @@ const Home: React.FC = () => {
               The world's first print-on-demand platform powered by advanced AI. Dream it, generate it, wear it.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to={AppRoute.CREATE}
+              <button
+                onClick={() => handleAuthAction(AppRoute.CREATE)}
                 className="bg-white text-black px-10 py-5 rounded-full text-lg font-black tracking-tight hover:bg-green-500 transition-all text-center shadow-2xl hover:scale-105"
               >
                 START CREATING
-              </Link>
-              <Link
-                to={AppRoute.GALLERY}
+              </button>
+              <button
+                onClick={() => handleAuthAction(AppRoute.GALLERY)}
                 className="bg-transparent border-2 border-white text-white px-10 py-5 rounded-full text-lg font-black tracking-tight hover:bg-white/10 transition-all text-center"
               >
                 BROWSE GALLERY
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -91,12 +103,12 @@ const Home: React.FC = () => {
       <section className="py-20 bg-gray-50">
          <div className="max-w-5xl mx-auto px-4 text-center">
             <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase tracking-tighter">Ready to wear your imagination?</h2>
-            <Link 
-              to={AppRoute.CREATE}
+            <button 
+              onClick={() => handleAuthAction(AppRoute.CREATE)}
               className="inline-block bg-black text-white px-12 py-6 rounded-full font-black text-xl hover:bg-gray-800 transition-all shadow-xl hover:-translate-y-1"
             >
               CREATE NOW
-            </Link>
+            </button>
          </div>
       </section>
     </div>
