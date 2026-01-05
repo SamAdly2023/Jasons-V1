@@ -51,9 +51,3 @@ export enum AppRoute {
   DASHBOARD = '/dashboard',
   ADMIN = '/admin'
 }
-  ADMIN = '/admin',
-  DASHBOARD = '/dashboard'
-}
-  ADMIN = '/admin',
-  PROFILE = '/profile'
-}
