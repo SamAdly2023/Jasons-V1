@@ -42,6 +42,11 @@ pool.connect((err, client, release) => {
 
 // Routes
 
+// GET /api/health (Check if backend is running)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // GET /api/products
 app.get('/api/products', async (req, res) => {
   try {
