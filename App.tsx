@@ -42,10 +42,13 @@ const App: React.FC = () => {
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      console.log("Google Login Success, getting user info...", tokenResponse);
       try {
         const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         }).then(res => res.json());
+
+        console.log("User Info from Google:", userInfo);
 
         const userData: User = {
           id: userInfo.sub,
@@ -54,16 +57,20 @@ const App: React.FC = () => {
           avatar: userInfo.picture,
           isAdmin: false
         };
+        
+        console.log("Syncing user with backend...", userData);
 
         // Sync with backend and get actual role (now returns properly mapped User object)
         const syncedUser = await api.syncUser(userData);
         
+        console.log("User synced successfully:", syncedUser);
+
         setUser(syncedUser);
         localStorage.setItem('fresh_user', JSON.stringify(syncedUser));
 
       } catch (error) {
-        console.error('Failed to fetch user info', error);
-        alert('Login failed. Please check your connection or try again.');
+        console.error('Failed to fetch user info or sync with backend', error);
+        alert(`Login failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
     onError: errorResponse => {

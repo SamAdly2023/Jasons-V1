@@ -78,6 +78,7 @@ app.post('/api/products', async (req, res) => {
 
 // POST /api/users (Login/Register)
 app.post('/api/users', async (req, res) => {
+  console.log('Received login request:', req.body);
   const { id, email, name, avatar_url, is_admin } = req.body;
   try {
     const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
@@ -87,12 +88,14 @@ app.post('/api/users', async (req, res) => {
 
     if (existingUser.rows.length > 0) {
       // Update existing user
+      console.log('Updating existing user:', id);
       await pool.query(
         'UPDATE users SET name = $1, avatar_url = $2, email = $3, is_admin = $4 WHERE id = $5',
         [name, avatar_url, email, shouldBeAdmin, id]
       );
     } else {
       // Create new user
+      console.log('Creating new user:', id);
       await pool.query(
         'INSERT INTO users (id, email, name, avatar_url, is_admin) VALUES ($1, $2, $3, $4, $5)',
         [id, email, name, avatar_url, shouldBeAdmin]
@@ -101,8 +104,10 @@ app.post('/api/users', async (req, res) => {
     
     // Return the user data so frontend has the correct role
     const updatedUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    console.log('Returning user data:', updatedUser.rows[0]);
     res.json(updatedUser.rows[0]);
   } catch (error) {
+    console.error('Database error in /api/users:', error);
     res.status(500).json({ error: error.message });
   }
 });
