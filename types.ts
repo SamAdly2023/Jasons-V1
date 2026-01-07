@@ -34,6 +34,17 @@ export interface CartItem {
   color: string;
 }
 
+export interface ShippingAddress {
+  name: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  email: string;
+}
+
 export interface Order {
   id: string;
   userId: string;
@@ -41,6 +52,7 @@ export interface Order {
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
   createdAt: string;
+  shippingAddress?: ShippingAddress;
 }
 
 export enum AppRoute {

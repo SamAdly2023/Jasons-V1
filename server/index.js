@@ -8,6 +8,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
+import { createPrintfulOrder } from './services/printful.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -37,6 +39,15 @@ const initDb = async () => {
       const schema = fs.readFileSync(schemaPath, 'utf8');
       console.log('Running database migration...');
       await client.query(schema);
+
+      // Add shipping_address column if it doesn't exist
+      try {
+        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address jsonb;`);
+        console.log("Migration: Check usage of shipping_address column - OK");
+      } catch (colErr) {
+        console.warn("Migration: Error adding shipping_address column (might already exist or not supported):", colErr.message);
+      }
+
       console.log('Database migration completed successfully.');
     } finally {
       client.release();
@@ -176,7 +187,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
 
 // POST /api/orders
 app.post('/api/orders', async (req, res) => {
-  const { id, user_id, total_amount, items } = req.body;
+  const { id, user_id, total_amount, items, shipping_address } = req.body;
   
   const client = await pool.connect();
   
@@ -184,29 +195,22 @@ app.post('/api/orders', async (req, res) => {
     await client.query('BEGIN');
     
     // Insert Order
-    // If id is provided use it, otherwise let DB generate (but we need the ID for items)
-    // Assuming frontend generates ID or we generate it here if not provided.
-    // schema.sql says id is uuid default.
-    
     let orderId = id;
     if (orderId) {
         await client.query(
-            'INSERT INTO orders (id, user_id, total_amount) VALUES ($1, $2, $3)',
-            [orderId, user_id, total_amount]
+            'INSERT INTO orders (id, user_id, total_amount, shipping_address) VALUES ($1, $2, $3, $4)',
+            [orderId, user_id, total_amount, JSON.stringify(shipping_address)]
         );
     } else {
         const orderRes = await client.query(
-            'INSERT INTO orders (user_id, total_amount) VALUES ($1, $2) RETURNING id',
-            [user_id, total_amount]
+            'INSERT INTO orders (user_id, total_amount, shipping_address) VALUES ($1, $2, $3) RETURNING id',
+            [user_id, total_amount, JSON.stringify(shipping_address)]
         );
         orderId = orderRes.rows[0].id;
     }
 
     // Insert Order Items
     for (const item of items) {
-      // Generate a random ID for the item if not provided, or let DB handle it if schema allows
-      // schema.sql says order_items id is uuid default uuid_generate_v4()
-      
       await client.query(
         'INSERT INTO order_items (order_id, product_id, quantity, size, color, price_at_purchase) VALUES ($1, $2, $3, $4, $5, $6)',
         [
@@ -215,9 +219,24 @@ app.post('/api/orders', async (req, res) => {
             item.quantity,
             item.size,
             item.color,
-            item.price
+            item.price || 29.99 // Fallback
         ]
       );
+    }
+
+    // Trigger Printful Order
+    if (shipping_address) {
+       console.log("Creating Printful Order...");
+       try {
+         await createPrintfulOrder({
+           shippingAddress: shipping_address,
+           items: items
+         });
+         console.log("Printful Order Created (or Mocked)");
+       } catch (podError) {
+         console.error("Printful Error:", podError);
+         // Do not fail the transaction, just log it. Admin can retry manually.
+       }
     }
 
     await client.query('COMMIT');

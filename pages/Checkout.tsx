@@ -13,6 +13,16 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 const Checkout: React.FC = () => {
   const { user, cart, removeFromCart, clearCart } = useApp();
   const [step, setStep] = useState<'cart' | 'shipping' | 'payment' | 'success'>('cart');
+  const [shippingAddress, setShippingAddress] = useState({
+    name: user?.name || '',
+    line1: '',
+    line2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'US',
+    email: user?.email || ''
+  });
   
   const subtotal = cart.reduce((acc, item) => acc + 29.99 * item.quantity, 0);
   const shipping = subtotal > 75 ? 0 : 5.99;
@@ -28,15 +38,26 @@ const Checkout: React.FC = () => {
                 items: cart,
                 total: total,
                 status: 'pending',
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                shippingAddress: shippingAddress // Pass shipping address
             });
         } catch (e) {
             console.error("Failed to create order", e);
+            alert("Order created locally but failed to send to server/Printful. Please contact support.");
         }
     }
 
     setStep('success');
     setTimeout(() => clearCart(), 100);
+  };
+
+  const handleShippingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!shippingAddress.name || !shippingAddress.line1 || !shippingAddress.city || !shippingAddress.postalCode || !shippingAddress.email) {
+        alert("Please fill in all required shipping fields.");
+        return;
+    }
+    setStep('payment');
   };
 
   if (cart.length === 0 && step !== 'success') {
@@ -138,27 +159,90 @@ const Checkout: React.FC = () => {
             )}
 
             {step === 'shipping' && (
-              <div className="space-y-8">
+              <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <h2 className="text-2xl font-black uppercase">Shipping Details</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-gray-400 uppercase">First Name</label>
-                     <input type="text" className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" />
-                   </div>
-                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-gray-400 uppercase">Last Name</label>
-                     <input type="text" className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" />
+                   <div className="md:col-span-2 space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">Full Name</label>
+                     <input 
+                       type="text" 
+                       required
+                       value={shippingAddress.name}
+                       onChange={e => setShippingAddress({...shippingAddress, name: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                       placeholder="John Doe"
+                     />
                    </div>
                    <div className="md:col-span-2 space-y-2">
-                     <label className="text-xs font-bold text-gray-400 uppercase">Address</label>
-                     <input type="text" className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" />
+                     <label className="text-xs font-bold text-gray-400 uppercase">Email for updates</label>
+                     <input 
+                       type="email" 
+                       required
+                       value={shippingAddress.email}
+                       onChange={e => setShippingAddress({...shippingAddress, email: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                       placeholder="email@example.com"
+                     />
+                   </div>
+                   <div className="md:col-span-2 space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">Address Line 1</label>
+                     <input 
+                       type="text" 
+                       required
+                       value={shippingAddress.line1}
+                       onChange={e => setShippingAddress({...shippingAddress, line1: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black"
+                       placeholder="123 Main St"
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">City</label>
+                     <input 
+                       type="text" 
+                       required
+                       value={shippingAddress.city}
+                       onChange={e => setShippingAddress({...shippingAddress, city: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">State / Province</label>
+                     <input 
+                       type="text" 
+                       required
+                       value={shippingAddress.state}
+                       onChange={e => setShippingAddress({...shippingAddress, state: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">Postal Code</label>
+                     <input 
+                       type="text" 
+                       required
+                       value={shippingAddress.postalCode}
+                       onChange={e => setShippingAddress({...shippingAddress, postalCode: e.target.value})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-gray-400 uppercase">Country Code</label>
+                     <input 
+                       type="text" 
+                       required
+                       maxLength={2}
+                       value={shippingAddress.country}
+                       onChange={e => setShippingAddress({...shippingAddress, country: e.target.value.toUpperCase()})}
+                       className="w-full p-4 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-black" 
+                       placeholder="US"
+                     />
                    </div>
                 </div>
                 <div className="flex space-x-4">
-                  <button onClick={() => setStep('cart')} className="flex-1 py-5 bg-gray-100 rounded-2xl font-bold">BACK</button>
-                  <button onClick={() => setStep('payment')} className="flex-[2] py-5 bg-black text-white rounded-2xl font-bold">CONTINUE TO PAYMENT</button>
+                  <button type="button" onClick={() => setStep('cart')} className="flex-1 py-5 bg-gray-100 rounded-2xl font-bold">BACK</button>
+                  <button type="submit" className="flex-[2] py-5 bg-black text-white rounded-2xl font-bold">CONTINUE TO PAYMENT</button>
                 </div>
-              </div>
+              </form>
             )}
 
             {step === 'payment' && (
