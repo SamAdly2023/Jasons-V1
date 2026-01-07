@@ -37,27 +37,58 @@ const Gallery: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {designs.map((design) => (
-            <div key={design.id} className="group relative">
-               <div className="aspect-square rounded-[2rem] overflow-hidden bg-gray-50 mb-4 shadow-sm group-hover:shadow-xl transition-all duration-500">
+            <div key={design.id} className="group bg-white rounded-[2rem] p-3 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-50 hover:border-gray-100">
+               {/* Image Container */}
+               <div className="aspect-square rounded-[1.5rem] overflow-hidden bg-gray-50 mb-4 relative">
                  <img 
                    src={design.imageUrl} 
                    alt={design.name} 
                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                  />
-                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <Link 
+                 {design.isAI && (
+                    <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider border border-white/10">
+                        <i className="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Art
+                    </span>
+                 )}
+                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
+               </div>
+
+               {/* Product Info */}
+               <div className="px-2 pb-2">
+                   <div className="flex justify-between items-start mb-2">
+                       <h3 className="font-bold text-base leading-tight text-gray-900 line-clamp-1 pr-2" title={design.name}>
+                          {design.name}
+                       </h3>
+                       <span className="font-black text-base whitespace-nowrap">$32.99</span>
+                   </div>
+
+                   {/* Stats & Author */}
+                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-50">
+                        <div className="flex items-center space-x-2">
+                           <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-gray-200 to-gray-300 flex items-center justify-center text-[10px] font-bold text-gray-600">
+                               {design.author.charAt(0).toUpperCase()}
+                           </div>
+                           <p className="text-xs text-gray-500 font-medium truncate max-w-[80px]">{design.author}</p>
+                        </div>
+                        <div className="flex items-center text-[10px] font-semibold text-gray-400 space-x-2">
+                           <span className="flex items-center bg-gray-50 px-2 py-1 rounded-md">
+                             <i className="fa-solid fa-layer-group mr-1 sm-icon"></i> T-Shirt
+                           </span>
+                        </div>
+                   </div>
+
+                   {/* Action Button */}
+                   <Link 
                       to={AppRoute.CREATE}
                       state={{ selectedDesign: design }}
-                      className="bg-white text-black px-6 py-3 rounded-full font-bold text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                      className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl font-bold text-sm group-hover:bg-green-500 group-hover:text-black transition-all duration-300"
                     >
-                      Use Design
+                      <span>Order Now</span>
+                      <i className="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
                     </Link>
-                 </div>
                </div>
-               <h3 className="font-bold text-lg">{design.name}</h3>
-               <p className="text-gray-400 text-sm">By {design.author}</p>
             </div>
           ))}
         </div>
