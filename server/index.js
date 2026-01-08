@@ -16,6 +16,65 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+// Define Schema Directly in Code to avoid file path issues on deployment
+const SCHEMA_SQL = `
+-- USERS TABLE
+create table if not exists public.users (
+  id text primary key,
+  email text unique not null,
+  name text,
+  avatar_url text,
+  is_admin boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- PRODUCTS TABLE
+create table if not exists public.products (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  description text,
+  price decimal(10, 2) not null,
+  base_image_url text not null,
+  category text check (category in ('tshirt', 'hoodie')),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- DESIGNS TABLE
+create table if not exists public.designs (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  author text not null,
+  image_url text not null,
+  is_ai boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- ORDERS TABLE
+create table if not exists public.orders (
+  id text default gen_random_uuid()::text primary key,
+  user_id text references public.users(id),
+  total_amount decimal(10, 2) not null,
+  status text check (status in ('pending', 'processing', 'shipped', 'delivered')) default 'pending',
+  tracking_number text,
+  tracking_url text,
+  printful_order_id text,
+  shipping_address jsonb,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- ORDER ITEMS TABLE
+create table if not exists public.order_items (
+  id uuid default gen_random_uuid() primary key,
+  order_id text references public.orders(id) on delete cascade,
+  product_id uuid references public.products(id),
+  design_id uuid references public.designs(id),
+  quantity integer not null,
+  size text,
+  color text,
+  price_at_purchase decimal(10, 2) not null
+);
+`;
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -36,29 +95,8 @@ const initDb = async () => {
   try {
     const client = await pool.connect();
     try {
-      const schemaPath = path.join(__dirname, '../database/schema.sql');
-      const schema = fs.readFileSync(schemaPath, 'utf8');
-      console.log('Running database migration...');
-      await client.query(schema);
-
-      // Add shipping_address column if it doesn't exist
-      try {
-        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_address jsonb;`);
-        console.log("Migration: Check usage of shipping_address column - OK");
-      } catch (colErr) {
-        console.warn("Migration: Error adding shipping_address column:", colErr.message);
-      }
-
-      // Add tracking columns
-      try {
-        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number text;`);
-        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_url text;`);
-        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS printful_order_id text;`);
-        console.log("Migration: Check usage of tracking columns - OK");
-      } catch (colErr) {
-          console.warn("Migration: Error adding tracking columns:", colErr.message);
-      }
-
+      console.log('Running database migration (Inline SQL)...');
+      await client.query(SCHEMA_SQL);
       console.log('Database migration completed successfully.');
     } finally {
       client.release();
@@ -214,21 +252,15 @@ app.get('/api/force-init-db', async (req, res) => {
     try {
         const client = await pool.connect();
         try {
-            const schemaPath = path.join(__dirname, '../database/schema.sql');
-            if (!fs.existsSync(schemaPath)) {
-                return res.status(500).json({ error: 'Schema file not found at ' + schemaPath });
-            }
-            const schema = fs.readFileSync(schemaPath, 'utf8');
-            console.log('Forcing manual database migration...');
-            await client.query(schema);
+            console.log('Forcing manual database migration (Inline SQL)...');
+            await client.query(SCHEMA_SQL);
             
             // Check if user table exists now
             const check = await client.query("SELECT to_regclass('public.users');");
             
             res.json({ 
                 message: 'Database initialization executed successfully.',
-                tableCheck: check.rows[0],
-                schemaFile: schemaPath
+                tableCheck: check.rows[0]
             });
         } finally {
             client.release();
