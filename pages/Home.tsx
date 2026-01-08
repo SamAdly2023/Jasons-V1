@@ -36,8 +36,8 @@ const Home: React.FC = () => {
               NEW: AI Generated Fashion
             </span>
             <h1 className="text-6xl md:text-8xl font-black text-white leading-tight tracking-tighter mb-8">
-              DESIGN YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">JASONS APP</span>
+              WEAR YOUR <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">IMAGINATION</span>
             </h1>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-lg">
               Jasons Wear powered by AI. Serving world wide.
