@@ -209,6 +209,39 @@ app.post('/api/create-payment-intent', async (req, res) => {
   res.json({ clientSecret: 'pi_mock_secret_' + Math.random().toString(36).substr(2, 9) });
 });
 
+// DEBUG ROUTE: Manually Force DB Init and Show Error
+app.get('/api/force-init-db', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        try {
+            const schemaPath = path.join(__dirname, '../database/schema.sql');
+            if (!fs.existsSync(schemaPath)) {
+                return res.status(500).json({ error: 'Schema file not found at ' + schemaPath });
+            }
+            const schema = fs.readFileSync(schemaPath, 'utf8');
+            console.log('Forcing manual database migration...');
+            await client.query(schema);
+            
+            // Check if user table exists now
+            const check = await client.query("SELECT to_regclass('public.users');");
+            
+            res.json({ 
+                message: 'Database initialization executed successfully.',
+                tableCheck: check.rows[0],
+                schemaFile: schemaPath
+            });
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        res.status(500).json({ 
+            error: 'Database Init Failed', 
+            details: error.message,
+            stack: error.stack 
+        });
+    }
+});
+
 // POST /api/orders
 app.post('/api/orders', async (req, res) => {
   const { id, user_id, total_amount, items, shipping_address } = req.body;
