@@ -39,8 +39,12 @@ const Create: React.FC = () => {
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
+    
+    // Check for API key (VITE_ prefix or standard env var injected by vite config)
+    const hasApiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
+
     try {
-      if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      if (!hasApiKey) {
          console.warn("No Gemini API Key found. Using Demo Mock.");
          
          // Mock delay
