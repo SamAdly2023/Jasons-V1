@@ -1,14 +1,28 @@
 services:
   - type: web
-    name: fresh-life-style
+    name: jasons-wear
     env: node
     plan: free
     buildCommand: npm run render-build
     startCommand: npm start
     envVars:
       - key: DATABASE_URL
-        fromGroup: shared-db-settings
+        fromDatabase:
+          name: jasons-wear-db
+          property: connectionString
       - key: GEMINI_API_KEY
+        sync: false
+      - key: PRINTFUL_API_KEY
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
         sync: false
       - key: NODE_VERSION
         value: 20.11.0
+
+databases:
+  - name: jasons-wear-db
+    plan: free
+    databaseName: jasonswear
+    user: jasonswear_user
