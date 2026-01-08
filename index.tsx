@@ -10,7 +10,7 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "241819621736-cm441t7dafeo3epa3pg3p3qmud4fmkg1.apps.googleusercontent.com";
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "241819621736-h4qnvn5a896hoacmjku3mnjrat886vke.apps.googleusercontent.com";
 
 if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
   console.warn("VITE_GOOGLE_CLIENT_ID is missing. Using default demo ID. Auth might fail on production.");

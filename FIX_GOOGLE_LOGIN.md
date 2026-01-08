@@ -3,7 +3,7 @@
 The error "redirect_uri_mismatch" happens because your new website URL is not authorized to use the Google Login ID configured in your code.
 
 ## Do you own this Client ID?
-`241819621736-cm441t7dafeo3epa3pg3p3qmud4fmkg1.apps.googleusercontent.com`
+`241819621736-h4qnvn5a896hoacmjku3mnjrat886vke.apps.googleusercontent.com`
 
 ### IF YES (You have access to the Google Cloud Console):
 1. Go to [Google Cloud Console - Credentials](https://console.cloud.google.com/apis/credentials).
