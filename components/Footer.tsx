@@ -9,28 +9,27 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
           <div className="col-span-1 md:col-span-1">
-             <Link to="/" className="flex flex-col mb-8">
-              <span className="logo-font text-4xl font-black tracking-tighter text-white uppercase -mb-2">Fresh Life</span>
-              <span className="text-[12px] font-bold tracking-[0.3em] uppercase text-green-500 self-end">Style.com</span>
+             <Link to="/" className="flex flex-col mb-8 items-start">
+              <img src="/logo.png" alt="Jasons Wear" className="h-20 w-auto mb-2 invert" /> 
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               Empowering individual expression through high-quality print-on-demand fashion and cutting-edge artificial intelligence.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-black transition-all">
+              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
                 <i className="fa-brands fa-instagram"></i>
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-black transition-all">
+              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
                 <i className="fa-brands fa-twitter"></i>
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-black transition-all">
+              <a href="#" className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
                 <i className="fa-brands fa-tiktok"></i>
               </a>
             </div>
           </div>
 
           <div>
-            <h4 className="text-lg font-black uppercase tracking-tighter mb-8 text-green-500">Explore</h4>
+            <h4 className="text-lg font-black uppercase tracking-tighter mb-8 text-blue-500">Explore</h4>
             <ul className="space-y-4 text-gray-400 font-bold text-sm">
               <li><Link to={AppRoute.GALLERY} className="hover:text-white transition-colors uppercase">Artist Gallery</Link></li>
               <li><Link to={AppRoute.CREATE} className="hover:text-white transition-colors uppercase">AI Creator</Link></li>
@@ -40,7 +39,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="text-lg font-black uppercase tracking-tighter mb-8 text-green-500">Support</h4>
+            <h4 className="text-lg font-black uppercase tracking-tighter mb-8 text-blue-500">Support</h4>
             <ul className="space-y-4 text-gray-400 font-bold text-sm">
               <li><a href="#" className="hover:text-white transition-colors uppercase">Shipping Info</a></li>
               <li><a href="#" className="hover:text-white transition-colors uppercase">Returns & Exchanges</a></li>

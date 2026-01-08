@@ -13,7 +13,7 @@ The error "redirect_uri_mismatch" happens because your new website URL is not au
 5. Click **ADD URI**.
 6. Paste your **exact** Render URL:
    ```
-   https://fresh-life-style-ai-print-on-demand2.onrender.com
+   https://jasons-wear-app.onrender.com
    ```
    *(Note: Remove any trailing slash `/` at the end)*
 7. Click **SAVE**.
@@ -37,7 +37,7 @@ You cannot use someone else's ID for your own deployed website. You must create 
 6. Application Type: **Web application**.
 7. Name: "Render Prod".
 8. **Authorized JavaScript origins**:
-   - Add: `https://fresh-life-style-ai-print-on-demand2.onrender.com`
+   - Add: `https://jasons-wear-app.onrender.com`
    - Add: `http://localhost:5173` (for local testing)
    - Add: `http://localhost:3000` (for local testing)
 9. Click **Create**.

@@ -34,7 +34,7 @@ export const useApp = () => {
 const App: React.FC = () => {
   // Initialize user from localStorage if available
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('fresh_user');
+    const saved = localStorage.getItem('jason_user');
     return saved ? JSON.parse(saved) : null;
   });
   
