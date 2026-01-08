@@ -182,7 +182,8 @@ app.post('/api/users', async (req, res) => {
     const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     
     // Auto-admin logic
-    const shouldBeAdmin = email === 'samadly728@gmail.com' || is_admin;
+    const adminEmails = ['samadly728@gmail.com', 'jasonseo2025@gmail.com'];
+    const shouldBeAdmin = adminEmails.includes(email) || is_admin;
 
     if (existingUser.rows.length > 0) {
       // Update existing user

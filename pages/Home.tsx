@@ -23,7 +23,7 @@ const Home: React.FC = () => {
         {/* Background Animation/Image */}
         <div className="absolute inset-0 opacity-40">
           <img 
-            src="https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=2000" 
+            src="https://images.unsplash.com/photo-1529139574466-a30222ade8ce?q=80&w=2000&auto=format&fit=crop" 
             alt="Hero background" 
             className="w-full h-full object-cover"
           />
