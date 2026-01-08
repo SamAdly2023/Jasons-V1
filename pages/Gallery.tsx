@@ -20,6 +20,19 @@ const Gallery: React.FC = () => {
     }
   }, [user, navigate]);
 
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault(); // Prevent navigation if inside Link (though button is outside Link usually)
+    if (window.confirm("Are you sure you want to delete this design?")) {
+        try {
+            await api.deleteDesign(id);
+            setDesigns(prev => prev.filter(d => d.id !== id));
+        } catch (error) {
+            console.error("Failed to delete design", error);
+            alert("Failed to delete design");
+        }
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -39,7 +52,19 @@ const Gallery: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {designs.map((design) => (
-            <div key={design.id} className="group bg-white rounded-[2rem] p-3 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-50 hover:border-gray-100">
+            <div key={design.id} className="group bg-white rounded-[2rem] p-3 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-50 hover:border-gray-100 relative">
+               
+               {/* Admin Delete Button */}
+               {user.isAdmin && (
+                  <button 
+                    onClick={(e) => handleDelete(e, design.id)}
+                    className="absolute top-5 right-5 z-20 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+                    title="Delete Design"
+                  >
+                    <i className="fa-solid fa-trash text-xs"></i>
+                  </button>
+               )}
+
                {/* Image Container */}
                <div className="aspect-square rounded-[1.5rem] overflow-hidden bg-gray-50 mb-4 relative">
                  <img 
@@ -48,7 +73,7 @@ const Gallery: React.FC = () => {
                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                  />
                  {design.isAI && (
-                    <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider border border-white/10">
+                    <span className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider border border-white/10 z-10">
                         <i className="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Art
                     </span>
                  )}

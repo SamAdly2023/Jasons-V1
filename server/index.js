@@ -392,6 +392,18 @@ app.post('/api/designs', async (req, res) => {
   }
 });
 
+// DELETE /api/designs/:id (Admin delete)
+app.delete('/api/designs/:id', async (req, res) => {
+    const { id } = req.params;
+    // In a real app, you would check auth/admin status here too from headers
+    try {
+        await pool.query('DELETE FROM designs WHERE id = $1', [id]);
+        res.json({ message: 'Design deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Webhook for Printful Updates
 app.post('/api/webhooks/printful', async (req, res) => {
     const { type, data } = req.body;

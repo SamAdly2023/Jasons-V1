@@ -53,6 +53,15 @@ export const api = {
     };
   },
 
+  async deleteDesign(id: string): Promise<void> {
+    const res = await fetch(`${API_URL}/designs/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+        throw new Error('Failed to delete design');
+    }
+  },
+
   async syncUser(user: User): Promise<User> {
     console.log(`[API] Syncing user to: ${API_URL}/users`);
     const res = await fetch(`${API_URL}/users`, {
