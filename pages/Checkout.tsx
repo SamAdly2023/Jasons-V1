@@ -78,9 +78,9 @@ const Checkout: React.FC = () => {
   if (step === 'success') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-white">
-        <div className="w-32 h-32 bg-green-50 rounded-full flex items-center justify-center mb-8 relative">
-           <i className="fa-solid fa-circle-check text-6xl text-green-500 z-10"></i>
-           <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
+        <div className="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center mb-8 relative">
+           <i className="fa-solid fa-circle-check text-6xl text-blue-600 z-10"></i>
+           <div className="absolute inset-0 bg-blue-600 rounded-full animate-ping opacity-20"></div>
         </div>
         <h1 className="text-4xl font-black uppercase mb-4 tracking-tighter">Order Success!</h1>
         <p className="text-gray-500 mb-8 text-center max-w-sm">
@@ -281,7 +281,7 @@ const Checkout: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Shipping</span>
-                  <span className={`font-bold ${shipping === 0 ? 'text-green-500' : 'text-black'}`}>
+                  <span className={`font-bold ${shipping === 0 ? 'text-blue-600' : 'text-black'}`}>
                     {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
                   </span>
                 </div>

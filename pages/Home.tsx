@@ -32,12 +32,12 @@ const Home: React.FC = () => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="max-w-2xl">
-            <span className="inline-block py-1 px-4 rounded-full bg-green-500 text-black font-bold text-xs uppercase tracking-[0.2em] mb-6">
+            <span className="inline-block py-1 px-4 rounded-full bg-blue-600 text-white font-bold text-xs uppercase tracking-[0.2em] mb-6">
               NEW: AI Generated Fashion
             </span>
             <h1 className="text-6xl md:text-8xl font-black text-white leading-tight tracking-tighter mb-8">
               DESIGN YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">JASONS WEAR</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">JASONS APP</span>
             </h1>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-lg">
               Jasons Wear powered by AI. Serving world wide.
@@ -45,7 +45,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => handleAuthAction(AppRoute.CREATE)}
-                className="bg-white text-black px-10 py-5 rounded-full text-lg font-black tracking-tight hover:bg-green-500 transition-all text-center shadow-2xl hover:scale-105"
+                className="bg-white text-black px-10 py-5 rounded-full text-lg font-black tracking-tight hover:bg-blue-600 hover:text-white transition-all text-center shadow-2xl hover:scale-105"
               >
                 START CREATING
               </button>
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div className="group">
-              <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500 group-hover:text-white transition-all">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
                 <i className="fa-solid fa-wand-magic-sparkles text-2xl"></i>
               </div>
               <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">AI Generation</h3>

@@ -83,7 +83,7 @@ const Gallery: React.FC = () => {
                    <Link 
                       to={AppRoute.CREATE}
                       state={{ selectedDesign: design }}
-                      className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl font-bold text-sm group-hover:bg-green-500 group-hover:text-black transition-all duration-300"
+                      className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-xl font-bold text-sm group-hover:bg-blue-600 group-hover:text-white transition-all duration-300"
                     >
                       <span>Order Now</span>
                       <i className="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
@@ -98,7 +98,7 @@ const Gallery: React.FC = () => {
              <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Want your art featured?</h2>
              <p className="text-gray-400">Join our creator program and earn from every sale.</p>
            </div>
-           <button className="bg-green-500 text-black px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-green-400 transition-colors">
+           <button className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-blue-500 transition-colors">
              Apply as Creator
            </button>
         </div>

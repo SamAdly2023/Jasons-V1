@@ -41,8 +41,8 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-semibold tracking-wide uppercase transition-colors hover:text-green-600 ${
-                  location.pathname === link.path ? 'text-green-600' : 'text-gray-900'
+                className={`text-sm font-semibold tracking-wide uppercase transition-colors hover:text-blue-600 ${
+                  location.pathname === link.path ? 'text-blue-600' : 'text-gray-900'
                 }`}
               >
                 {link.name}

@@ -68,7 +68,7 @@ const AdminDashboard: React.FC = () => {
                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
                     <i className={`fa-solid ${stat.icon} text-gray-800`}></i>
                  </div>
-                 <span className="text-xs font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full">{stat.trend}</span>
+                 <span className="text-xs font-bold bg-blue-50 text-blue-700 px-3 py-1 rounded-full">{stat.trend}</span>
                </div>
                <h3 className="text-gray-500 font-bold uppercase text-sm mb-2">{stat.label}</h3>
                <p className="text-4xl font-black">{stat.value}</p>
@@ -100,7 +100,7 @@ const AdminDashboard: React.FC = () => {
                         <td className="py-4 font-bold">${order.total_amount}</td>
                         <td className="py-4">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                            order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                            order.status === 'delivered' ? 'bg-emerald-100 text-emerald-800' :
                             order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
                             'bg-yellow-100 text-yellow-800'
                           }`}>

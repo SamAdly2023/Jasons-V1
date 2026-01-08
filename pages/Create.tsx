@@ -133,7 +133,7 @@ const Create: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* AI Generator Card */}
           <div className="bg-white rounded-[2rem] p-10 shadow-xl border border-gray-100 flex flex-col h-full group hover:-translate-y-2 transition-all duration-300">
-             <div className="w-20 h-20 bg-green-500 rounded-3xl flex items-center justify-center mb-8 shadow-lg shadow-green-200">
+             <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mb-8 shadow-lg shadow-blue-200">
                 <i className="fa-solid fa-wand-magic-sparkles text-3xl text-white"></i>
              </div>
              <h2 className="text-2xl font-black mb-4 uppercase">AI Generator</h2>
@@ -152,7 +152,7 @@ const Create: React.FC = () => {
                  className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center space-x-2 transition-all ${
                    isGenerating || !prompt.trim() 
                     ? 'bg-gray-100 text-gray-400' 
-                    : 'bg-green-500 text-black hover:bg-green-400 active:scale-95'
+                    : 'bg-blue-600 text-white hover:bg-blue-500 active:scale-95'
                  }`}
                >
                  {isGenerating ? (
