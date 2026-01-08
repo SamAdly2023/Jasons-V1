@@ -127,7 +127,7 @@ const Create: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-black tracking-tighter uppercase mb-4">Start Your Creation</h1>
-          <p className="text-gray-500 max-w-xl mx-auto">Choose how you want to design your fresh apparel. Select from our AI generator, your own files, or our curated gallery.</p>
+          <p className="text-gray-500 max-w-xl mx-auto">Choose how you want to design your custom apparel. Select from our AI generator, your own files, or our curated gallery.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

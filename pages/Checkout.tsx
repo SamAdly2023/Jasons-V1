@@ -67,7 +67,7 @@ const Checkout: React.FC = () => {
            <i className="fa-solid fa-basket-shopping text-4xl text-gray-200"></i>
         </div>
         <h1 className="text-3xl font-black uppercase mb-4">Your cart is empty</h1>
-        <p className="text-gray-500 mb-8 text-center max-w-sm">Looks like you haven't added any fresh designs yet. Start creating now!</p>
+        <p className="text-gray-500 mb-8 text-center max-w-sm">Looks like you haven't added any custom designs yet. Start creating now!</p>
         <Link to={AppRoute.CREATE} className="bg-black text-white px-10 py-4 rounded-full font-bold hover:bg-gray-800 transition-all">
           EXPLORE CREATOR
         </Link>
