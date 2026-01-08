@@ -87,6 +87,16 @@ pool.connect((err, client, release) => {
 
 // Routes
 
+// POST /api/admin/migrate - Manually trigger migration
+app.post('/api/admin/migrate', async (req, res) => {
+    try {
+        await initDb();
+        res.json({ message: 'Migration run successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // GET /api/health (Check if backend is running)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
