@@ -84,7 +84,7 @@ const Checkout: React.FC = () => {
         </div>
         <h1 className="text-4xl font-black uppercase mb-4 tracking-tighter">Order Success!</h1>
         <p className="text-gray-500 mb-8 text-center max-w-sm">
-          Thank you for choosing Fresh Life Style. We've received your order and started the printing process. You'll receive a confirmation email shortly.
+          Thank you for choosing Jasons Wear. We've received your order and started the printing process. You'll receive a confirmation email shortly.
         </p>
         <div className="space-x-4">
           <Link to={AppRoute.HOME} className="bg-black text-white px-10 py-4 rounded-full font-bold">RETURN HOME</Link>
@@ -293,7 +293,7 @@ const Checkout: React.FC = () => {
              <div className="bg-blue-50 p-4 rounded-2xl flex items-start space-x-3">
                <i className="fa-solid fa-shield-check text-blue-500 mt-1"></i>
                <p className="text-xs text-blue-800 leading-relaxed font-medium">
-                 Your transaction is encrypted with 256-bit SSL. Fresh Life Style does not store your card details.
+                 Your transaction is encrypted with 256-bit SSL. Jasons Wear does not store your card details.
                </p>
              </div>
            </div>

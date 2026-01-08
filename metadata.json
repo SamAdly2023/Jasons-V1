@@ -1,5 +1,5 @@
 {
-  "name": "Fresh Life Style - AI Print on Demand",
+  "name": "Jasons Wear - AI Print on Demand",
   "description": "A high-end print-on-demand platform for T-shirts, featuring AI design generation, custom uploads, and a curated gallery. Integrated with Stripe payments and Google authentication simulation.",
   "requestFramePermissions": [
     "camera"

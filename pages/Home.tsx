@@ -37,10 +37,10 @@ const Home: React.FC = () => {
             </span>
             <h1 className="text-6xl md:text-8xl font-black text-white leading-tight tracking-tighter mb-8">
               DESIGN YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">FRESH LIFE</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">JASONS WEAR</span>
             </h1>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-lg">
-              The world's first print-on-demand platform powered by advanced AI. Dream it, generate it, wear it.
+              Jasons Wear powered by AI. Serving world wide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button

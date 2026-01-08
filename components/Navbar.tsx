@@ -29,9 +29,9 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex flex-col">
-              <span className="logo-font text-3xl font-black tracking-tighter text-black uppercase -mb-2">Fresh Life</span>
-              <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400 self-end">Style.com</span>
+            <Link to="/" className="flex flex-col items-center">
+              <img src="/logo.png" alt="Jasons Wear" className="h-16 w-auto" />
+              <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-500 mt-1">Powered by AI - Serving Worldwide</span>
             </Link>
           </div>
 

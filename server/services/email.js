@@ -20,7 +20,7 @@ const sendEmail = async (to, subject, html) => {
 
   try {
     await transporter.sendMail({
-      from: `"Fresh Life Style" <${process.env.EMAIL_USER}>`,
+      from: `"Jasons Wear" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
@@ -34,14 +34,14 @@ const sendEmail = async (to, subject, html) => {
 export const sendWelcomeEmail = async (user) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #000;">Welcome to Fresh Life Style!</h1>
+      <h1 style="color: #000;">Welcome to Jasons Wear!</h1>
       <p>Hi ${user.name},</p>
       <p>We're thrilled to have you join our community of creators and style icons.</p>
       <p>Start designing your unique apparel today using our AI-powered tools.</p>
-      <a href="https://fresh-life-style.com/create" style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Start Creating</a>
+      <a href="https://jasonswear.com/create" style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Start Creating</a>
     </div>
   `;
-  await sendEmail(user.email, 'Welcome to Fresh Life Style!', html);
+  await sendEmail(user.email, 'Welcome to Jasons Wear!', html);
 };
 
 export const sendOrderConfirmation = async (user, orderId, amount) => {

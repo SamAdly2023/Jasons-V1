@@ -29,7 +29,7 @@ You cannot use someone else's ID for your own deployed website. You must create 
 2. Create a **New Project**.
 3. Go to **APIs & Services > OAuth consent screen**.
    - Select **External**.
-   - Fill in app name (e.g., "Fresh Life Style").
+   - Fill in app name (e.g., "Jasons Wear").
    - Add your email.
    - Click Save/Next until finished.
 4. Go to **APIs & Services > Credentials**.

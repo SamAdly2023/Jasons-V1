@@ -43,7 +43,7 @@ const AdminDashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12">
           <div>
             <h1 className="text-4xl font-black uppercase tracking-tighter">Admin Control</h1>
-            <p className="text-gray-500">Managing Fresh Life Style operations.</p>
+            <p className="text-gray-500">Managing Jasons Wear operations.</p>
           </div>
           <div className="mt-6 md:mt-0 flex space-x-2 bg-white p-2 rounded-2xl shadow-sm">
             {(['orders', 'users', 'analytics'] as const).map(tab => (

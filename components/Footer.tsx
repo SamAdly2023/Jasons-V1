@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
 
         <div className="pt-10 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-600 text-[10px] font-black tracking-widest uppercase mb-4 md:mb-0">
-            &copy; 2024 FRESH LIFE STYLE. ALL RIGHTS RESERVED. POWERED BY GEMINI AI.
+            &copy; 2026 JASONS WEAR. ALL RIGHTS RESERVED. POWERED BY AI. SERVING WORLDWIDE.
           </p>
           <div className="flex space-x-6 text-[10px] font-black tracking-widest uppercase text-gray-600">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
